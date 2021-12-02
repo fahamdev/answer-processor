@@ -9,6 +9,7 @@ import helmet from 'helmet';
 import { WinstonModule } from 'nest-winston';
 import { loggerOptions } from './common/config/log.config';
 import { ConfigService } from '@nestjs/config';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -39,6 +40,14 @@ async function bootstrap() {
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
-  await app.listen(configService.get<number>('PORT', 300));
+  const options = new DocumentBuilder()
+    .setTitle('Answer Processor Service')
+    .setDescription('Reads and processes answers from the CSV file')
+    .setVersion('1.0')
+    .build();
+  const document = SwaggerModule.createDocument(app, options);
+  SwaggerModule.setup('/', app, document);
+
+  await app.listen(configService.get<number>('PORT'));
 }
 bootstrap();
