@@ -8,6 +8,7 @@ import { AppModule } from './app.module';
 import helmet from 'helmet';
 import { WinstonModule } from 'nest-winston';
 import { loggerOptions } from './common/config/log.config';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -19,6 +20,8 @@ async function bootstrap() {
   app.enableVersioning({
     type: VersioningType.URI,
   });
+
+  const configService = app.get(ConfigService);
 
   app.use(helmet());
   app.enableCors();
@@ -36,6 +39,6 @@ async function bootstrap() {
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
-  await app.listen(3000);
+  await app.listen(configService.get<number>('PORT', 300));
 }
 bootstrap();
