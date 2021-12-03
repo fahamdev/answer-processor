@@ -17,7 +17,7 @@ export class Answer extends BaseEntity {
   })
   answer: string;
 
-  @ManyToOne(() => Test, (test) => test.answers)
+  @ManyToOne(() => Test, (test) => test.answers, { eager: false })
   @JoinColumn({
     name: 'test_id',
   })

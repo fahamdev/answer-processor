@@ -21,6 +21,7 @@ export class Test extends BaseEntity {
 
   @OneToMany(() => Answer, (answer) => answer.test, {
     eager: true,
+    cascade: true,
   })
   @IsOptional()
   answers?: Answer[];
