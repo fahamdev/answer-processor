@@ -1,26 +1,12 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { TestsService } from './tests.service';
 import { CreateTestDto } from './dto/create-test.dto';
-import { UpdateTestDto } from './dto/update-test.dto';
 import { ApiTags } from '@nestjs/swagger';
 
-@Controller({ path: 'tests', version: '1' })
+@Controller({ path: 'test', version: '1' })
 @ApiTags('Tests')
 export class TestsController {
   constructor(private readonly testsService: TestsService) {}
-
-  @Post()
-  create(@Body() createTestDto: CreateTestDto) {
-    return this.testsService.create(createTestDto);
-  }
 
   @Get()
   findAll() {
@@ -28,17 +14,7 @@ export class TestsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.testsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTestDto: UpdateTestDto) {
-    return this.testsService.update(+id, updateTestDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.testsService.remove(+id);
+  findOne(@Param('id') id: number) {
+    return this.testsService.findOne(id);
   }
 }

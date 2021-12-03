@@ -1,26 +1,28 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateTestDto } from './dto/create-test.dto';
-import { UpdateTestDto } from './dto/update-test.dto';
+import { Answer } from './entities/answer.entity';
+import { Test } from './entities/test.entity';
 
 @Injectable()
 export class TestsService {
-  create(createTestDto: CreateTestDto) {
-    return 'This action adds a new test';
+  constructor(
+    @InjectRepository(Test)
+    private testRepository: Repository<Test>,
+    @InjectRepository(Answer)
+    private answerRepository: Repository<Answer>,
+  ) {}
+
+  async findAll() {
+    return await this.testRepository.find();
   }
 
-  findAll() {
-    return `This action returns all tests`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} test`;
-  }
-
-  update(id: number, updateTestDto: UpdateTestDto) {
-    return `This action updates a #${id} test`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} test`;
+  async findOne(id: number) {
+    const test = await this.testRepository.findOne(id);
+    if (!test) {
+      throw new BadRequestException(`Test not found with id - ${id}`);
+    }
+    return test;
   }
 }
