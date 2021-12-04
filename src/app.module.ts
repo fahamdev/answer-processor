@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import LogsMiddleware from './common/middlewares/logs.middleware';
 import { configValidationSchema } from './common/schema/config.schema';
 import { TestsModule } from './tests/tests.module';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { TestsModule } from './tests/tests.module';
         }),
     }),
     TestsModule,
+    FileModule,
   ],
   controllers: [AppController],
   providers: [AppService],
