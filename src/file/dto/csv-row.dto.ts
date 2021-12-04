@@ -1,12 +1,10 @@
 import {
   IsEmail,
-  IsEnum,
   IsOptional,
   IsString,
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { Answers } from '../../tests/enums/answers.enum';
 
 export class CSVRowDto {
   @IsString()
@@ -26,7 +24,7 @@ export class CSVRowDto {
   @IsString()
   questionNumber: number;
 
-  @IsEnum(Answers, { message: 'Answer must be A, B, C, D or E' })
+  @IsString()
   @IsOptional()
   answer?: string;
 }

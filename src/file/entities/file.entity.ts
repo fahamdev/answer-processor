@@ -1,7 +1,7 @@
-import { Column } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 import { BaseEntity } from '../../common/entities/base.entity';
-import { Answers } from '../../tests/enums/answers.enum';
 
+@Entity()
 export class File extends BaseEntity {
   @Column({ name: 'exam_id', length: 8 })
   examId: string;
@@ -9,10 +9,10 @@ export class File extends BaseEntity {
   @Column({ type: 'date', name: 'exam_date' })
   examDate: Date;
 
-  @Column('candidate_email')
+  @Column({ name: 'candidate_email' })
   candidateEmail: string;
 
-  @Column('candidate_name')
+  @Column({ name: 'candidate_name' })
   candidateName: string;
 
   @Column({
@@ -23,8 +23,6 @@ export class File extends BaseEntity {
 
   @Column({
     nullable: true,
-    type: 'enum',
-    enum: Answers,
   })
   answer?: string;
 }
