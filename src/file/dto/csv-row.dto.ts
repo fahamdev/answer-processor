@@ -21,7 +21,6 @@ export class CSVRowDto {
   @IsString()
   candidateName: string;
 
-  @IsString()
   questionNumber: number;
 
   @IsString()

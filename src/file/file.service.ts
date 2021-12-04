@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { UploadFileDto } from './dto/upload-file.dto';
 import { parse } from 'fast-csv';
 import { CSVRowDto } from './dto/csv-row.dto';
@@ -8,6 +13,8 @@ import { CSVHeaders } from './helpers/file.helper';
 import { File } from './entities/file.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { DownloadFileDto } from './dto/download-file.request.dto';
+import { ExamResultDto } from './dto/exam-result.dto';
 @Injectable()
 export class FileService {
   private readonly logger = new Logger('HTTP', {
@@ -19,7 +26,7 @@ export class FileService {
     private fileRepository: Repository<File>,
   ) {}
 
-  uploadCSV(uploadFileDto: UploadFileDto, file: Express.Multer.File) {
+  parseFileAndSave(uploadFileDto: UploadFileDto, file: Express.Multer.File) {
     if (!file) {
       throw new BadRequestException('Upload valid CSV File.');
     }
@@ -87,5 +94,30 @@ export class FileService {
     } catch (error) {
       this.logger.error(error);
     }
+  }
+
+  async downloadResult(downloadFileDto: DownloadFileDto) {
+    const data = await this.fileRepository.find({
+      where: {
+        examId: downloadFileDto.examId,
+        candidateEmail: downloadFileDto.candidateEmail,
+      },
+    });
+    if (!data.length) {
+      throw new NotFoundException(
+        `No data found for Exam ID : ${downloadFileDto.examId} and Candidate Email : ${downloadFileDto.candidateEmail}`,
+      );
+    }
+    return data;
+    // return this.prepareResult(data);
+  }
+
+  prepareResult(data: File[]): ExamResultDto {
+    const examResult = new ExamResultDto();
+    examResult.examId = data[0].examId;
+    examResult.candidateName = data[0].candidateName;
+    examResult.candidateEmail = data[0].candidateEmail;
+
+    return examResult;
   }
 }
