@@ -1,8 +1,6 @@
 import {
-  IsDate,
   IsEmail,
   IsEnum,
-  IsNumber,
   IsOptional,
   IsString,
   MaxLength,
@@ -10,14 +8,14 @@ import {
 } from 'class-validator';
 import { Answers } from '../../tests/enums/answers.enum';
 
-export class CreateFileDto {
+export class CSVRowDto {
   @IsString()
   @MaxLength(8)
   @MinLength(3)
   examId: string;
 
-  @IsDate()
-  examDate: Date;
+  @IsString()
+  examDate: string;
 
   @IsEmail()
   candidateEmail: string;
@@ -25,7 +23,7 @@ export class CreateFileDto {
   @IsString()
   candidateName: string;
 
-  @IsNumber()
+  @IsString()
   questionNumber: number;
 
   @IsEnum(Answers, { message: 'Answer must be A, B, C, D or E' })

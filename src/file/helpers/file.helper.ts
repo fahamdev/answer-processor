@@ -6,3 +6,12 @@ export const csvFileFilter = (req, file, callback) => {
   }
   callback(null, true);
 };
+
+export const CSVHeaders = [
+  'examId',
+  'examDate',
+  'candidateEmail',
+  'candidateName',
+  'questionNumber',
+  'answer',
+];
