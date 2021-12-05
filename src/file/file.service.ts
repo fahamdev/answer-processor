@@ -9,7 +9,11 @@ import { parse } from 'fast-csv';
 import { CSVRowDto } from './dto/csv-row.dto';
 import { Readable } from 'stream';
 import { validate } from 'class-validator';
-import { CSVHeaders } from './helpers/file.helper';
+import {
+  calculatePercentRank,
+  CSVHeaders,
+  getScore,
+} from './helpers/file.helper';
 import { File } from './entities/file.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -110,7 +114,7 @@ export class FileService {
     const data = await this.fileRepository.find({
       where: {
         examId: downloadFileDto.examId,
-        candidateEmail: downloadFileDto.candidateEmail,
+        // candidateEmail: downloadFileDto.candidateEmail,
       },
     });
     if (!data.length) {
@@ -118,15 +122,31 @@ export class FileService {
         `No data found for Exam ID : ${downloadFileDto.examId} and Candidate Email : ${downloadFileDto.candidateEmail}`,
       );
     }
-    return data;
-    // return this.prepareResult(data);
+    const test = await this.testService.findOneByExamId(downloadFileDto.examId);
+    // return data;
+    return this.prepareResult(data, downloadFileDto, test);
   }
 
-  prepareResult(data: File[]): ExamResultDto {
+  prepareResult(
+    data: File[],
+    downloadFileDto: DownloadFileDto,
+    test: Test,
+  ): ExamResultDto {
     const examResult = new ExamResultDto();
-    examResult.examId = data[0].examId;
-    examResult.candidateName = data[0].candidateName;
-    examResult.candidateEmail = data[0].candidateEmail;
+
+    examResult.examId = downloadFileDto.examId;
+    examResult.candidateName = data.find(
+      (row) => row.candidateEmail === downloadFileDto.candidateEmail,
+    ).candidateName;
+    examResult.candidateEmail = downloadFileDto.candidateEmail;
+    examResult.score = getScore(
+      data.filter(
+        (row) => row.candidateEmail === downloadFileDto.candidateEmail,
+      ),
+      test.numberOfQuestions,
+    );
+
+    // console.log(calculatePercentRank([13, 12, 11, 4, 8, 3, 2, 1, 1, 1], 4));
 
     return examResult;
   }

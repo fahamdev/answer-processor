@@ -14,8 +14,8 @@ export class ExamResultDto {
   @IsString()
   candidateName: string;
 
-  @IsNumber({ maxDecimalPlaces: 2 })
-  score: number;
+  @IsString()
+  score: string;
 
   @IsNumber({ maxDecimalPlaces: 2 })
   percentRank?: number;

@@ -30,7 +30,7 @@ export class TestsService {
     //todo cache data
     const test = await this.testRepository.findOne({ where: { examId } });
     if (!test) {
-      throw new BadRequestException(`Test not found with id - ${examId}`);
+      throw new BadRequestException(`Test not found with examId - ${examId}`);
     }
     return test;
   }
@@ -39,7 +39,7 @@ export class TestsService {
     const test = await this.findOneByExamId(examId);
 
     if (!test) {
-      throw new BadRequestException(`Test not found with id - ${examId}`);
+      throw new BadRequestException(`Test not found with examId - ${examId}`);
     }
     return test.answers.find(
       (answer) => answer.question.toString() === question.toString(),
