@@ -8,7 +8,7 @@ export class Answer extends BaseEntity {
   @Column({
     nullable: false,
   })
-  question: number;
+  question: string;
 
   @Column({
     nullable: false,
