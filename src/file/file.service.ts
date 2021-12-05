@@ -15,6 +15,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DownloadFileDto } from './dto/download-file.request.dto';
 import { ExamResultDto } from './dto/exam-result.dto';
+import { Test } from '../tests/entities/test.entity';
+import { TestsService } from '../tests/tests.service';
 @Injectable()
 export class FileService {
   private readonly logger = new Logger('HTTP', {
@@ -24,6 +26,7 @@ export class FileService {
   constructor(
     @InjectRepository(File)
     private fileRepository: Repository<File>,
+    private testService: TestsService,
   ) {}
 
   parseFileAndSave(uploadFileDto: UploadFileDto, file: Express.Multer.File) {
@@ -48,6 +51,7 @@ export class FileService {
           renameHeaders: true,
         }),
       )
+      //todo validate csv file
       // .validate((data: CSVRowDto): boolean => {
       //   const csvRow = new CSVRowDto();
       //   // csvRow.examId = data.examId;
@@ -89,7 +93,13 @@ export class FileService {
       return;
     }
     try {
+      const answer = await this.testService.findAnswer(
+        csvRowDto.examId,
+        csvRowDto.questionNumber,
+      );
+
       const newRow = this.fileRepository.create(csvRowDto);
+      newRow.isCorrect = csvRowDto.answer === answer;
       return await this.fileRepository.save(newRow);
     } catch (error) {
       this.logger.error(error);

@@ -25,4 +25,24 @@ export class TestsService {
     }
     return test;
   }
+
+  async findOneByExamId(examId: string) {
+    //todo cache data
+    const test = await this.testRepository.findOne({ where: { examId } });
+    if (!test) {
+      throw new BadRequestException(`Test not found with id - ${examId}`);
+    }
+    return test;
+  }
+
+  async findAnswer(examId: string, question: number): Promise<string> {
+    const test = await this.findOneByExamId(examId);
+
+    if (!test) {
+      throw new BadRequestException(`Test not found with id - ${examId}`);
+    }
+    return test.answers.find(
+      (answer) => answer.question.toString() === question.toString(),
+    ).answer;
+  }
 }

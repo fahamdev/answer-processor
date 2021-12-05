@@ -5,6 +5,7 @@ import { Test } from './test.entity';
 
 @Entity()
 export class Answer extends BaseEntity {
+  //todo make it string
   @Column({
     nullable: false,
   })

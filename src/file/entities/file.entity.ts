@@ -1,3 +1,4 @@
+import { IsBoolean } from 'class-validator';
 import { Column, Entity } from 'typeorm';
 import { BaseEntity } from '../../common/entities/base.entity';
 
@@ -25,4 +26,8 @@ export class File extends BaseEntity {
     nullable: true,
   })
   answer?: string;
+
+  @Column({ name: 'is_correct' })
+  @IsBoolean()
+  isCorrect: boolean;
 }
