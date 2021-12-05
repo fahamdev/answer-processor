@@ -23,10 +23,7 @@ export const calculatePercentRank = (
 ): string => {
   const arrCopy = [...arr];
   arrCopy.sort((a, b) => a - b);
-  console.log(arrCopy);
-
   const index = arrCopy.indexOf(value);
-  console.log(index);
   const length = arrCopy.length;
   const result = index / (length - 1);
   return result.toFixed(2);
@@ -35,9 +32,19 @@ export const calculatePercentRank = (
 export const getScore = (
   data: Array<File>,
   numberOfQuestions: number,
-): string => {
+): number => {
   return (
     (data.map((item) => item.isCorrect).reduce((a, b) => +a + +b, 0) * 100) /
     numberOfQuestions
+  );
+};
+
+export const getAverageScore = (
+  otherCandidatesScore: number[],
+  candidateScore,
+) => {
+  return (
+    (otherCandidatesScore.reduce((a, b) => a + b, 0) + candidateScore) /
+    (otherCandidatesScore.length + 1)
   ).toFixed(2);
 };

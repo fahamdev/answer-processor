@@ -5,11 +5,10 @@ import { Test } from './test.entity';
 
 @Entity()
 export class Answer extends BaseEntity {
-  //todo make it string
   @Column({
     nullable: false,
   })
-  question: number;
+  question: string;
 
   @Column({
     nullable: false,

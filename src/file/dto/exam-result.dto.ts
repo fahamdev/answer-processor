@@ -1,12 +1,12 @@
-import { IsEmail, IsNumber, IsString, MaxLength } from 'class-validator';
+import { IsEmail, IsString, MaxLength } from 'class-validator';
 
 export class ExamResultDto {
   @IsString()
   @MaxLength(8)
   examId: string;
 
-  @IsNumber({ maxDecimalPlaces: 2 })
-  averageScore: number;
+  @IsString()
+  averageScore: string;
 
   @IsEmail()
   candidateEmail: string;
@@ -17,6 +17,6 @@ export class ExamResultDto {
   @IsString()
   score: string;
 
-  @IsNumber({ maxDecimalPlaces: 2 })
-  percentRank?: number;
+  @IsString()
+  percentRank?: string;
 }

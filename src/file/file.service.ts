@@ -12,6 +12,7 @@ import { validate } from 'class-validator';
 import {
   calculatePercentRank,
   CSVHeaders,
+  getAverageScore,
   getScore,
 } from './helpers/file.helper';
 import { File } from './entities/file.entity';
@@ -33,7 +34,7 @@ export class FileService {
     private testService: TestsService,
   ) {}
 
-  parseFileAndSave(uploadFileDto: UploadFileDto, file: Express.Multer.File) {
+  parseFileAndSave(_uploadFileDto: UploadFileDto, file: Express.Multer.File) {
     if (!file) {
       throw new BadRequestException('Upload valid CSV File.');
     }
@@ -44,7 +45,6 @@ export class FileService {
     };
     readable.push(Buffer.from(file.buffer));
     readable.push(null);
-
     readable
       .pipe(
         parse({
@@ -71,22 +71,19 @@ export class FileService {
       // })
       .on('error', (error) => console.error(error))
       .on('data', (row) => {
-        console.log(`${JSON.stringify(row)}`);
-        try {
-          this.saveRow(row);
-        } catch (error) {
-          this.logger.error(error);
-        }
+        this.parseRowAndSaveData(row);
         return;
       })
-      .on('end', (rowCount: number) => console.log(`Parsed ${rowCount} rows`));
+      .on('end', (rowCount: number) => {
+        this.logger.log(`Parsed ${rowCount} rows`);
+      });
 
     return {
-      file: file.buffer.toString(),
+      message: `File ${file.originalname} uploaded successfully.`,
     };
   }
 
-  async saveRow(csvRowDto: CSVRowDto) {
+  async parseRowAndSaveData(csvRowDto: CSVRowDto) {
     const existingRow = await this.fileRepository.findOne({
       examId: csvRowDto.examId,
       candidateEmail: csvRowDto.candidateEmail,
@@ -114,16 +111,21 @@ export class FileService {
     const data = await this.fileRepository.find({
       where: {
         examId: downloadFileDto.examId,
-        // candidateEmail: downloadFileDto.candidateEmail,
       },
     });
     if (!data.length) {
+      throw new NotFoundException(
+        `No data found for Exam ID : ${downloadFileDto.examId}`,
+      );
+    }
+    if (
+      !data.find((row) => row.candidateEmail === downloadFileDto.candidateEmail)
+    ) {
       throw new NotFoundException(
         `No data found for Exam ID : ${downloadFileDto.examId} and Candidate Email : ${downloadFileDto.candidateEmail}`,
       );
     }
     const test = await this.testService.findOneByExamId(downloadFileDto.examId);
-    // return data;
     return this.prepareResult(data, downloadFileDto, test);
   }
 
@@ -135,18 +137,49 @@ export class FileService {
     const examResult = new ExamResultDto();
 
     examResult.examId = downloadFileDto.examId;
+
     examResult.candidateName = data.find(
       (row) => row.candidateEmail === downloadFileDto.candidateEmail,
     ).candidateName;
+
     examResult.candidateEmail = downloadFileDto.candidateEmail;
-    examResult.score = getScore(
+
+    const candidateScore = getScore(
       data.filter(
         (row) => row.candidateEmail === downloadFileDto.candidateEmail,
       ),
       test.numberOfQuestions,
     );
+    examResult.score = candidateScore.toFixed(2);
 
-    // console.log(calculatePercentRank([13, 12, 11, 4, 8, 3, 2, 1, 1, 1], 4));
+    const otherCandidates = [
+      ...new Set(
+        data
+          .filter(
+            (item) => item.candidateEmail !== downloadFileDto.candidateEmail,
+          )
+          .map((item) => item.candidateEmail),
+      ),
+    ];
+
+    const otherCandidatesScore: number[] = otherCandidates.map(
+      (candidateEmail) => {
+        return getScore(
+          data.filter((row) => row.candidateEmail === candidateEmail),
+          test.numberOfQuestions,
+        );
+      },
+    );
+
+    examResult.averageScore = getAverageScore(
+      otherCandidatesScore,
+      candidateScore,
+    );
+
+    examResult.percentRank = calculatePercentRank(
+      [...otherCandidatesScore, candidateScore],
+      candidateScore,
+    );
 
     return examResult;
   }
