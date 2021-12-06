@@ -96,15 +96,16 @@ export class FileService {
       candidateName: csvRowDto.candidateName,
       questionNumber: csvRowDto.questionNumber,
     });
+    const answer = await this.testService.findAnswer(
+      csvRowDto.examId,
+      csvRowDto.questionNumber,
+    );
     if (existingRow) {
-      return;
+      existingRow.answer = csvRowDto.answer;
+      existingRow.isCorrect = csvRowDto.answer === answer;
+      return await this.fileRepository.save(existingRow);
     }
     try {
-      const answer = await this.testService.findAnswer(
-        csvRowDto.examId,
-        csvRowDto.questionNumber,
-      );
-
       const newRow = this.fileRepository.create(csvRowDto);
       newRow.isCorrect = csvRowDto.answer === answer;
       return await this.fileRepository.save(newRow);
