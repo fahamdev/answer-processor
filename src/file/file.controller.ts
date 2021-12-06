@@ -5,6 +5,7 @@ import {
   UseInterceptors,
   UploadedFile,
   StreamableFile,
+  Header,
 } from '@nestjs/common';
 import { FileService } from './file.service';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -50,6 +51,8 @@ export class FileController {
   }
 
   @Post('download/result')
+  @Header('Content-Type', 'application/octet-stream')
+  @Header('Content-Disposition', 'attachment; filename="result.csv')
   async download(
     @Body() downloadFileDto: DownloadFileDto,
   ): Promise<StreamableFile> {

@@ -1,4 +1,3 @@
-import * as path from 'path';
 import * as fs from 'fs';
 import { FormatterOptionsArgs, Row, writeToStream } from '@fast-csv/format';
 
@@ -66,34 +65,3 @@ export default class CsvFile {
     });
   }
 }
-
-// const csvFile = new CsvFile({
-//   path: path.resolve(__dirname, 'append.tmp.csv'),
-//   // headers to write
-//   headers: ['c', 'b', 'a'],
-// });
-
-// // 1. create the csv
-// csvFile
-//   .create([
-//     { a: 'a1', b: 'b1', c: 'c1' },
-//     { b: 'b2', a: 'a2', c: 'c2' },
-//     { a: 'a3', b: 'b3', c: 'c3' },
-//   ])
-//   // append rows to file
-//   .then(() =>
-//     csvFile.append([
-//       { a: 'a4', b: 'b4', c: 'c4' },
-//       { a: 'a5', b: 'b5', c: 'c5' },
-//     ]),
-//   )
-//   // append another row
-//   .then(() => csvFile.append([{ a: 'a6', b: 'b6', c: 'c6' }]))
-//   .then(() => csvFile.read())
-//   .then((contents) => {
-//     console.log(`${contents}`);
-//   })
-//   .catch((err) => {
-//     console.error(err.stack);
-//     process.exit(1);
-//   });
