@@ -8,7 +8,7 @@ import {
 import { FileService } from './file.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadFileDto } from './dto/upload-file.dto';
-import { ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { csvFileFilter } from './helpers/file.helper';
 import { DownloadFileDto } from './dto/download-file.request.dto';
 
@@ -19,6 +19,18 @@ export class FileController {
 
   @Post('upload')
   @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        fileType: { type: 'string' },
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
   @UseInterceptors(
     FileInterceptor('file', {
       fileFilter: csvFileFilter,
