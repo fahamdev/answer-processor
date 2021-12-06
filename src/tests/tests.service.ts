@@ -1,7 +1,12 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  CACHE_MANAGER,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Cache } from 'cache-manager';
 import { Repository } from 'typeorm';
-import { CreateTestDto } from './dto/create-test.dto';
 import { Answer } from './entities/answer.entity';
 import { Test } from './entities/test.entity';
 
@@ -12,6 +17,7 @@ export class TestsService {
     private testRepository: Repository<Test>,
     @InjectRepository(Answer)
     private answerRepository: Repository<Answer>,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   async findAll() {
@@ -27,8 +33,17 @@ export class TestsService {
   }
 
   async findOneByExamId(examId: string) {
-    //todo cache data
+    const cachedTests = await this.cacheManager.get('tests');
+    if (cachedTests && cachedTests[examId]) {
+      return cachedTests[examId];
+    }
+
     const test = await this.testRepository.findOne({ where: { examId } });
+
+    const newCachedTests = cachedTests ? cachedTests : {};
+    newCachedTests[examId] = test;
+    await this.cacheManager.set('tests', newCachedTests, { ttl: 3600 });
+
     if (!test) {
       throw new BadRequestException(`Test not found with examId - ${examId}`);
     }
