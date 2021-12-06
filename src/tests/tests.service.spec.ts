@@ -1,3 +1,4 @@
+import { CACHE_MANAGER } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import {
@@ -11,7 +12,6 @@ import { TestsService } from './tests.service';
 describe('TestsService', () => {
   let service: TestsService;
   let testRepository: MockRepository;
-  let answerRepository: MockRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -22,15 +22,14 @@ describe('TestsService', () => {
           useValue: createMockRepository(),
         },
         {
-          provide: getRepositoryToken(Answer),
-          useValue: createMockRepository(),
+          provide: CACHE_MANAGER,
+          useValue: {},
         },
       ],
     }).compile();
 
     service = module.get<TestsService>(TestsService);
     testRepository = module.get<MockRepository>(getRepositoryToken(TestEntity));
-    answerRepository = module.get<MockRepository>(getRepositoryToken(Answer));
   });
 
   it('should be defined', () => {

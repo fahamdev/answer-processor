@@ -7,7 +7,6 @@ import {
 } from '@nestjs/common';
 import { UploadFileDto } from './dto/upload-file.dto';
 import { parse } from 'fast-csv';
-import { format } from '@fast-csv/format';
 import { CSVRowDto } from './dto/csv-row.dto';
 import { Readable } from 'stream';
 import { validate } from 'class-validator';
@@ -27,7 +26,6 @@ import { TestsService } from '../tests/tests.service';
 import * as path from 'path';
 import CsvFile from './helpers/csv.helper';
 import { createReadStream } from 'fs';
-import { join } from 'path';
 @Injectable()
 export class FileService {
   private readonly logger = new Logger('HTTP', {
@@ -96,15 +94,16 @@ export class FileService {
       candidateName: csvRowDto.candidateName,
       questionNumber: csvRowDto.questionNumber,
     });
+    const answer = await this.testService.findAnswer(
+      csvRowDto.examId,
+      csvRowDto.questionNumber,
+    );
     if (existingRow) {
-      return;
+      existingRow.answer = csvRowDto.answer;
+      existingRow.isCorrect = csvRowDto.answer === answer;
+      return await this.fileRepository.save(existingRow);
     }
     try {
-      const answer = await this.testService.findAnswer(
-        csvRowDto.examId,
-        csvRowDto.questionNumber,
-      );
-
       const newRow = this.fileRepository.create(csvRowDto);
       newRow.isCorrect = csvRowDto.answer === answer;
       return await this.fileRepository.save(newRow);
@@ -135,10 +134,8 @@ export class FileService {
     }
     const test = await this.testService.findOneByExamId(downloadFileDto.examId);
     const csvData = this.prepareResult(data, downloadFileDto, test);
-    console.log('csvDatacsvDatacsvDatacsvData', csvData);
     const csvFile = new CsvFile({
       path: path.resolve(__dirname, 'result.tmp.csv'),
-      // headers to write
       headers: [
         'examId',
         'averageScore',
@@ -149,17 +146,7 @@ export class FileService {
       ],
     });
 
-    // 1. create the csv
-    csvFile
-      .create([csvData])
-      .then(() => csvFile.read())
-      .then((contents) => {
-        console.log(`${contents}`);
-      })
-      .catch((err) => {
-        console.error(err.stack);
-        process.exit(1);
-      });
+    await csvFile.create([csvData]);
 
     const file = createReadStream(path.resolve(__dirname, 'result.tmp.csv'));
 

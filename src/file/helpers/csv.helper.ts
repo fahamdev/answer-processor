@@ -36,7 +36,6 @@ export default class CsvFile {
   }
 
   create(rows: Row[]): Promise<void> {
-    console.log('path$$$$$$$$$$$$$$', this.path);
     return CsvFile.write(fs.createWriteStream(this.path), rows, {
       ...this.writeOpts,
     });
