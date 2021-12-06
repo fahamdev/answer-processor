@@ -7,7 +7,6 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Cache } from 'cache-manager';
 import { Repository } from 'typeorm';
-import { Answer } from './entities/answer.entity';
 import { Test } from './entities/test.entity';
 
 @Injectable()
@@ -15,8 +14,7 @@ export class TestsService {
   constructor(
     @InjectRepository(Test)
     private testRepository: Repository<Test>,
-    @InjectRepository(Answer)
-    private answerRepository: Repository<Answer>,
+
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
