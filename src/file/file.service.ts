@@ -48,7 +48,7 @@ export class FileService {
 
     const readable = new Readable();
     readable._read = () => {
-      this.logger.debug('reading csv file');
+      this.logger.log('reading csv file');
     };
     readable.push(Buffer.from(file.buffer));
     readable.push(null);
@@ -60,6 +60,7 @@ export class FileService {
           headers: CSVHeaders,
           trim: true,
           renameHeaders: true,
+          strictColumnHandling: true,
         }),
       )
       .validate((row, cb): void => {
@@ -72,18 +73,18 @@ export class FileService {
           return cb(null, errors.length === 0);
         });
       })
-      .on('error', (error) => console.error(error))
+      .on('data-invalid', (error) => {
+        this.logger.error(`Data Invalid: `, error);
+      })
+      .on('error', (error) => this.logger.error(error))
       .on('data', (row) => {
         this.parseRowAndSaveData(row);
         return;
       })
       .on('end', (rowCount: number) => {
         this.logger.log(`Parsed ${rowCount} rows`);
+        return { message: 'File uploaded successfully' };
       });
-
-    return {
-      message: `File ${file.originalname} uploaded successfully.`,
-    };
   }
 
   async parseRowAndSaveData(csvRowDto: CSVRowDto) {
