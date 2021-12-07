@@ -1,6 +1,5 @@
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { TestsService } from './tests.service';
-import { CreateTestDto } from './dto/create-test.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @Controller({ path: 'test', version: '1' })

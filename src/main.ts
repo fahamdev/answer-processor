@@ -11,6 +11,7 @@ import { loggerOptions } from './common/config/log.config';
 import { ConfigService } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import seedTests from './tests/seeds/test.seed';
+import { useContainer } from 'class-validator';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -50,6 +51,8 @@ async function bootstrap() {
   SwaggerModule.setup('/', app, document);
 
   await app.listen(configService.get<number>('PORT'));
+
+  useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
   seedTests();
 }
