@@ -1,14 +1,12 @@
 import {
   IsDateString,
   IsEmail,
-  IsEnum,
   IsNumberString,
   IsOptional,
   IsString,
   Matches,
   Validate,
 } from 'class-validator';
-import { ExamID } from '../enums/file.enum';
 import { ExamExistsRule } from '../validators/ExamExistsRule.validator';
 
 export class CSVRowDto {
