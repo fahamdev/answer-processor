@@ -5,7 +5,6 @@ import {
   createMockRepository,
   MockRepository,
 } from '../common/mocks/base-repository.mock';
-import { Answer } from './entities/answer.entity';
 import { Test as TestEntity } from './entities/test.entity';
 import { TestsService } from './tests.service';
 

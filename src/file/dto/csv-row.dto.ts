@@ -1,18 +1,21 @@
 import {
+  IsDateString,
   IsEmail,
+  IsEnum,
+  IsNumberString,
   IsOptional,
   IsString,
-  MaxLength,
-  MinLength,
+  Matches,
 } from 'class-validator';
+import { ExamID } from '../enums/file.enum';
 
 export class CSVRowDto {
   @IsString()
-  @MaxLength(8)
-  @MinLength(3)
+  @IsEnum(ExamID)
   examId: string;
 
   @IsString()
+  @IsDateString()
   examDate: string;
 
   @IsEmail()
@@ -21,9 +24,13 @@ export class CSVRowDto {
   @IsString()
   candidateName: string;
 
+  @IsString()
+  @IsNumberString()
+  @Matches(/^([1-9][0-9]?[0-9]?)$/)
   questionNumber: number;
 
   @IsString()
   @IsOptional()
+  @Matches(/[A-E]/)
   answer?: string;
 }
