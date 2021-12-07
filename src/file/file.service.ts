@@ -38,7 +38,10 @@ export class FileService {
     private testService: TestsService,
   ) {}
 
-  parseFileAndSave(_uploadFileDto: UploadFileDto, file: Express.Multer.File) {
+  async parseFileAndSave(
+    _uploadFileDto: UploadFileDto,
+    file: Express.Multer.File,
+  ) {
     if (!file) {
       throw new BadRequestException('Upload valid CSV File.');
     }
@@ -59,20 +62,16 @@ export class FileService {
           renameHeaders: true,
         }),
       )
-      //todo validate csv file
-      // .validate((data: CSVRowDto): boolean => {
-      //   const csvRow = new CSVRowDto();
-      //   // csvRow.examId = data.examId;
-      //   Object.assign(csvRow, data);
-      //   validate(csvRow).then((errors) => {
-      //     // errors is an array of validation errors
-      //     if (errors.length > 0) {
-      //       console.log('validation failed. errors: ', errors);
-      //       return false;
-      //     }
-      //   });
-      //   return true;
-      // })
+      .validate((row, cb): void => {
+        const csvRow = new CSVRowDto();
+        Object.assign(csvRow, row);
+        validate(csvRow).then((errors) => {
+          if (errors.length > 0) {
+            this.logger.error('validation failed. errors: ', errors);
+          }
+          return cb(null, errors.length === 0);
+        });
+      })
       .on('error', (error) => console.error(error))
       .on('data', (row) => {
         this.parseRowAndSaveData(row);

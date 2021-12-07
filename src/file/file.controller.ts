@@ -13,8 +13,6 @@ import { UploadFileDto } from './dto/upload-file.dto';
 import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { csvFileFilter } from './helpers/file.helper';
 import { DownloadFileDto } from './dto/download-file.request.dto';
-import { createReadStream } from 'fs';
-import { join } from 'path';
 
 @Controller({ path: 'file', version: '1' })
 @ApiTags('Files')
@@ -43,11 +41,11 @@ export class FileController {
       },
     }),
   )
-  upload(
+  async upload(
     @Body() uploadFileDto: UploadFileDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.fileService.parseFileAndSave(uploadFileDto, file);
+    return await this.fileService.parseFileAndSave(uploadFileDto, file);
   }
 
   @Post('download/result')

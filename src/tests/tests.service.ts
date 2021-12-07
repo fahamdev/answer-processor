@@ -56,6 +56,6 @@ export class TestsService {
     }
     return test.answers.find(
       (answer) => answer.question.toString() === question.toString(),
-    ).answer;
+    )?.answer;
   }
 }
