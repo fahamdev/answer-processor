@@ -1,5 +1,7 @@
 ## Running the app
 
+Create .env file with proper Environment Variables at root directory. Use the .env.local.example file as reference. Update Docker-compose file variables if necessary.
+
 ```bash
 # Database
 $ docker-compose up
