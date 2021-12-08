@@ -1,0 +1,19 @@
+version: '3.7'
+
+services:
+  test:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ans_processor
+      MYSQL_USER: docker
+      MYSQL_PASSWORD: docker
+    restart: always
+    volumes:
+      - ./data:/var/lib/mysql
+    ports:
+      - 3307:3306
+    security_opt:
+      - seccomp:unconfined
+volumes:
+  data: null
