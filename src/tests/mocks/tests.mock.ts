@@ -1,3 +1,6 @@
+import { Answer } from '../entities/answer.entity';
+import { Test } from '../entities/test.entity';
+
 export const mockTestsService = {
   findAll: jest.fn(),
   FindOne: jest.fn(),
@@ -5,7 +8,7 @@ export const mockTestsService = {
   findAnswer: jest.fn(),
 };
 
-export const TestStub = {
+export const TestStub: Test = {
   id: 1,
   examId: 'EX202001',
   numberOfQuestions: 10,
@@ -60,5 +63,5 @@ export const TestStub = {
       question: '7',
       answer: 'C',
     },
-  ],
-};
+  ] as Answer[],
+} as Test;
