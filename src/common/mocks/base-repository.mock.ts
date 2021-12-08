@@ -7,3 +7,8 @@ export const createMockRepository = <T = any>(): MockRepository<T> => ({
   findOne: jest.fn(),
   find: jest.fn(),
 });
+
+export const createMockCache = () => ({
+  get: jest.fn(),
+  set: jest.fn(),
+});

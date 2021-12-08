@@ -3,6 +3,7 @@ import {
   CACHE_MANAGER,
   Inject,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Cache } from 'cache-manager';
@@ -25,7 +26,7 @@ export class TestsService {
   async findOne(id: number) {
     const test = await this.testRepository.findOne(id);
     if (!test) {
-      throw new BadRequestException(`Test not found with id - ${id}`);
+      throw new NotFoundException(`Test not found with id - ${id}`);
     }
     return test;
   }
